@@ -1,13 +1,51 @@
 from tkinter import *
 from tkinter import filedialog
+from tkinter import messagebox
 
 def doNothing():
     x = 0
+
+
+def isModifiedText():
+    global text, filePath
+
+    t = text.get("1.0", "end-1c")
+
+    if ((filePath is None) and (len(t) > 0)):
+        return True
+    if ((filePath is None) and (len(t) == 0)):
+        return False
+
+    with open(filePath) as f:
+        tf = f.read()
+    return False if t == tf else True
+
+
+def quit():
+    global mainWindow, filePath
+    modifiedText = isModifiedText()
+    
+    if modifiedText:
+        isToSaveDocument = messagebox.askyesnocancel(title="Close - Save document", 
+        message="The document was modified. Do you want save it?", parent=mainWindow)
+
+        if isToSaveDocument:
+            if filePath is None:
+                saveAs()
+            else: 
+                save()
+        elif isToSaveDocument is None:
+            return
+
+    mainWindow.quit()
+    mainWindow.destroy()
+
 
 def createMainWindow():
     root = Tk()
     root.title("Coral Text Editor")
     root.geometry();
+    root.protocol("WM_DELETE_WINDOW", quit)
     return root
 
 
@@ -45,9 +83,11 @@ def save():
     file1.write(t)
     file1.close()
 
+
 def setText(value):
     text.delete(1.0, END)
     text.insert(END, value)
+
 
 def openFile():
     global filePath
@@ -64,9 +104,8 @@ def addMenuBar(root):
     fileMenu.add_command(label="Open", command=openFile)
     fileMenu.add_command(label="Save as", command=saveAs)
     fileMenu.add_command(label="Save", command=save)
-    fileMenu.add_command(label="Exit", command=doNothing)
+    fileMenu.add_command(label="Exit", command=quit)
     
-
     settingsMenu = Menu(menubar, tearoff=0)
     settingsMenu.add_command(label="Change color scheme", command=doNothing)
     
@@ -77,8 +116,10 @@ def addMenuBar(root):
     menubar.add_cascade(label="Help", menu=helpMenu)
     return menubar
 
+
 def main():
-    global text, filePath
+    global text, filePath, mainWindow
+    filePath = None
     mainWindow = createMainWindow();
     text = addTextWidget(mainWindow)
 
