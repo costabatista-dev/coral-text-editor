@@ -45,6 +45,7 @@ def createMainWindow():
     root = Tk()
     root.title("Coral Text Editor")
     root.geometry();
+    root.bind('<Escape>', changeBottom)
     root.protocol("WM_DELETE_WINDOW", quit)
     return root
 
@@ -66,22 +67,31 @@ def addOpenButton(mainWindow):
 
 
 def saveAs():
-    global filePath
+    global filePath, bottomBar
     t = text.get("1.0", "end-1c")
     savelocation = filedialog.asksaveasfilename()
-    file1 = open(savelocation, "w+")
-    file1.write(t)
-    file1.close()
-    filePath = savelocation
+    try:
+        file1 = open(savelocation, "w+")
+        file1.write(t)
+        file1.close()
+        filePath = savelocation
+        bottomBar.destroy()
+        setBottomBar()
+    except Exception:
+        filePath = None
 
 
 def save():
     global filePath
     t = text.get("1.0", "end-1c")
-    file1 = open(filePath, "w+")
-
-    file1.write(t)
-    file1.close()
+    if filePath is None:
+        saveAs()
+    else:
+        file1 = open(filePath, "w+")
+        file1.write(t)
+        file1.close()
+        bottomBar.destroy()
+        setBottomBar()
 
 
 def setText(value):
@@ -90,12 +100,16 @@ def setText(value):
 
 
 def openFile():
-    global filePath
+    global filePath, bottomBar
+    
     openlocation = filedialog.askopenfilename()
     with open(openlocation) as f: 
         t = f.read()
+    bottomBar.destroy()
+    setBottomBar()
     setText(t)
     filePath = openlocation
+    
 
 
 def addMenuBar(root):
@@ -117,15 +131,42 @@ def addMenuBar(root):
     return menubar
 
 
+def changeBottom(event):
+    global mainWindow, isEntry, bottomBar
+    bottomBar.destroy()
+    if isEntry == False:
+        isEntry = True
+        setBottomBar(isEntry)
+    else: 
+        isEntry = False
+        setBottomBar(isEntry)
+
+def setBottomBar(isEntry=False):
+    global bottomBar, mainWindow, filePath, text
+    
+    if isEntry == False:
+        bottomBar = Label(mainWindow, text="Unnamed document" if filePath is None else filePath)
+        text.config(state=NORMAL)
+        text.focus()
+        bottomBar.pack()
+    else:
+        bottomBar = Entry(mainWindow)
+        text.config(state=DISABLED)
+        bottomBar.pack(fill=X)
+        bottomBar.focus()
+    mainWindow.update()
+
 def main():
-    global text, filePath, mainWindow
+    global text, filePath, mainWindow, isEntry, bottomBar
     filePath = None
+    isEntry = False
     mainWindow = createMainWindow();
     text = addTextWidget(mainWindow)
-
+    setBottomBar(isEntry)
     menubar = addMenuBar(mainWindow)
     
     mainWindow.config(menu=menubar)
+    #changeBottom()
     mainWindow.mainloop()
 
     
