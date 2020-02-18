@@ -103,8 +103,12 @@ def openFile():
     global filePath, bottomBar
     
     openlocation = filedialog.askopenfilename()
-    with open(openlocation) as f: 
-        t = f.read()
+    try: 
+        with open(openlocation) as f: 
+            t = f.read()
+    except Exception:
+        openlocation = None
+        t = ""
     bottomBar.destroy()
     setBottomBar()
     setText(t)
