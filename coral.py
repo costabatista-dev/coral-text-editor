@@ -95,6 +95,7 @@ def save():
 
 
 def setText(value):
+    global mainWindow
     text.delete(1.0, END)
     text.insert(END, value)
 
@@ -109,10 +110,11 @@ def openFile():
     except Exception:
         openlocation = None
         t = ""
+    filePath = openlocation
     bottomBar.destroy()
     setBottomBar()
     setText(t)
-    filePath = openlocation
+    
     
 
 
@@ -170,7 +172,6 @@ def main():
     menubar = addMenuBar(mainWindow)
     
     mainWindow.config(menu=menubar)
-    #changeBottom()
     mainWindow.mainloop()
 
     
