@@ -115,7 +115,6 @@ def openFile():
     setBottomBar()
     setText(t)
     
-    
 
 
 def addMenuBar(root):
@@ -147,6 +146,7 @@ def changeBottom(event):
         isEntry = False
         setBottomBar(isEntry)
 
+
 def setBottomBar(isEntry=False):
     global bottomBar, mainWindow, filePath, text
     
@@ -162,11 +162,36 @@ def setBottomBar(isEntry=False):
         bottomBar.focus()
     mainWindow.update()
 
+
+def getNumberOfLines():
+    global numberOfLines, text
+    numberOfLines = int(text.index('end').split('.')[0]) - 1
+
+def drawLineNumbers():
+    global numberOfLines, lineNumbers
+    numberOfLines = getNumberOfLines()
+    lineNumbers = ""
+    for i in list(range(20)):
+        lineNumbers = lineNumbers + str(i + 1) + "\n"
+
+
+def drawLeftSideLineBar():
+    global lineBar, lineNumbers, mainWindow
+    
+    drawLineNumbers()
+    if lineBar == None:
+        lineBar = lineBar = Label(mainWindow, text=lineNumbers).pack(side=LEFT, anchor=N)
+
+
+
 def main():
-    global text, filePath, mainWindow, isEntry, bottomBar
+    global text, filePath, mainWindow, isEntry, bottomBar, lineBar, numberOfLines, lineNumbers
     filePath = None
     isEntry = False
+    lineBar = None
     mainWindow = createMainWindow();
+
+    #Label(mainWindow, text='1').pack(side=LEFT, anchor=N)
     text = addTextWidget(mainWindow)
     setBottomBar(isEntry)
     menubar = addMenuBar(mainWindow)
