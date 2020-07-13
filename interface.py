@@ -21,10 +21,10 @@ class CoralInterface:
         self.root.bind('<Escape>', self.changeBottomMode)
         # root.protocol("WM_DELETE_WINDOW", quit)
         # return root
-    
+
     def set_filePath(self, filePath=None):
         self.filePath = filePath
-    
+
     def get_filePath(self):
         return self.filePath
 
@@ -68,7 +68,7 @@ class CoralInterface:
     def addFileMenu(self):
         self.fileMenu = tk.Menu(self.menubar, tearoff=0)
         self.fileMenu.add_command(label="Open", command=self.__openFile)
-        self.fileMenu.add_command(label="Save as", command=self.doNothing)
+        self.fileMenu.add_command(label="Save as", command=self.__saveAs)
         self.fileMenu.add_command(label="Save", command=self.doNothing)
         self.fileMenu.add_command(label="Exit", command=self.doNothing)
         self.menubar.add_cascade(label="File", menu=self.fileMenu)
@@ -82,6 +82,9 @@ class CoralInterface:
         self.textWindow.delete(1.0, tk.END)
         self.textWindow.insert(tk.END, content)
 
+    def getTextWindowContent(self):
+        return self.textWindow.get("1.0", "end-1c")
+
     def __openFile(self):
         dmObject = menufunction.getFileContent()
         fileContent = dmObject.get_fileContent()
@@ -92,6 +95,20 @@ class CoralInterface:
             self.bottomBar.destroy()
         except Exception:
             print("Cannot destroy bottombar")
+        self.addBottomBar()
+        self.root.update()
+
+    def __saveAs(self):
+        dmObject = menufunction.saveFileContentAs(self.getTextWindowContent())
+        try:
+            self.bottomBar.destroy()
+        except Exception:
+            print("Cannot destroy bottombar")
+        if dmObject.get_filePath is None:
+            print("erro ao salvar")
+        else:
+            self.set_filePath(dmObject.get_filePath())
+            print("sucesso ao salvar")
         self.addBottomBar()
         self.root.update()
 
