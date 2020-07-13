@@ -1,10 +1,10 @@
-import interfacemanager as im
+from interface import CoralInterface
 
 
 def main():
-    instance = im.interface()
-    instance.mainWindow.mainloop()
+    textEditor = CoralInterface()
+    textEditor.showInterface()
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()
